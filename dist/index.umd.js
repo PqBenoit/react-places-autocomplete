@@ -124,7 +124,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    var _this = _possibleConstructorReturn(this, (PlacesAutocomplete.__proto__ || Object.getPrototypeOf(PlacesAutocomplete)).call(this, props));
 	
-	    _this.state = { autocompleteItems: [], localAddress: null };
+	    _this.state = { autocompleteItems: [], localAddress: null, localAddressString: '' };
 	
 	    _this.autocompleteCallback = _this.autocompleteCallback.bind(_this);
 	    _this.handleInputKeyDown = _this.handleInputKeyDown.bind(_this);
@@ -147,7 +147,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      this.autocompleteService = new google.maps.places.AutocompleteService();
 	      this.autocompleteOK = google.maps.places.PlacesServiceStatus.OK;
-	      this.handleLocalAddress();
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps.localAddress != this.state.localAddressString) {
+	        this.setState({ localAddressString: nextProps.localAddress });
+	        this.handleLocalAddress(nextProps.localAddress);
+	      }
 	    }
 	  }, {
 	    key: 'formattedSuggestion',
@@ -412,10 +419,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: 'handleLocalAddress',
-	    value: function handleLocalAddress() {
-	      var address = this.props.localAddress;
-	
-	      if (address === undefined || !address.length) return;
+	    value: function handleLocalAddress(address) {
+	      if (address === null || address === undefined || !address.length) return;
 	
 	      this.autocompleteService.getPlacePredictions(_extends({}, this.props.options, {
 	        input: address
@@ -432,9 +437,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	            suggestion: p.description,
 	            placeId: p.place_id,
 	            index: 0,
-	            formattedSuggestion: this.formattedSuggestion(p.structured_formatting)
+	            formattedSuggestion: this.formattedSuggestion(p.structured_formatting),
+	            localAddress: true
 	          }
 	        });
+	      }
+	    }
+	  }, {
+	    key: 'renderLocalAddressInfo',
+	    value: function renderLocalAddressInfo(item) {
+	      if (item.localAddress != null) {
+	        return _react2.default.createElement('div', { className: 'local-address-additionnal-info' });
 	      }
 	    }
 	  }, {
@@ -475,7 +488,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                },
 	                style: p.active ? _this4.inlineStyleFor('autocompleteItem', 'autocompleteItemActive') : _this4.inlineStyleFor('autocompleteItem'),
 	                className: p.active ? _this4.classNameFor('autocompleteItem', 'autocompleteItemActive') : _this4.classNameFor('autocompleteItem') },
-	              _this4.props.autocompleteItem({ suggestion: p.suggestion, formattedSuggestion: p.formattedSuggestion })
+	              _this4.props.autocompleteItem({ suggestion: p.suggestion, formattedSuggestion: p.formattedSuggestion }),
+	              _this4.renderLocalAddressInfo(p)
 	            );
 	          })
 	        )
@@ -5680,7 +5694,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    backgroundColor: '#ffffff',
 	    padding: '10px',
 	    color: '#555555',
-	    cursor: 'pointer'
+	    cursor: 'pointer',
+	    position: 'relative'
 	  },
 	  autocompleteItemActive: {
 	    backgroundColor: '#fafafa'

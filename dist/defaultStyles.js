@@ -24,7 +24,8 @@ var defaultStyles = {
     backgroundColor: '#ffffff',
     padding: '10px',
     color: '#555555',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    position: 'relative'
   },
   autocompleteItemActive: {
     backgroundColor: '#fafafa'
